@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marduk Board — Binance vs DEX</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0a0e17;color:#c8d6e5;font-family:'Courier New',monospace;padding:16px}
+  h1{text-align:center;color:#00d4ff;font-size:1.4rem;margin-bottom:4px;letter-spacing:2px}
+  .sub{text-align:center;color:#576574;font-size:.8rem;margin-bottom:12px}
+  .stats{display:flex;justify-content:center;gap:24px;margin-bottom:12px;font-size:.85rem}
+  .stats span{padding:4px 12px;border-radius:4px;background:#141a2a}
+  .stats .hot{color:#ffd32a;border:1px solid #ffd32a44}
+  .stats .count{color:#00d4ff;border:1px solid #00d4ff44}
+  .stats .time{color:#a4b0be;border:1px solid #a4b0be33}
+  table{width:100%;border-collapse:collapse;font-size:.82rem}
+  thead{position:sticky;top:0;z-index:2}
+  th{background:#141a2a;color:#00d4ff;padding:8px 6px;text-align:right;border-bottom:2px solid #1e3a5f;white-space:nowrap}
+  th:first-child,th:nth-child(2){text-align:left}
+  th:last-child{text-align:center}
+  td{padding:6px;text-align:right;border-bottom:1px solid #1a1f2e;white-space:nowrap}
+  td:first-child{text-align:left;font-weight:bold;color:#f5f6fa}
+  td:nth-child(2){text-align:left;color:#576574}
+  td:last-child{text-align:center}
+  tr:hover{background:#1a2238}
+  .pos{color:#2ed573}
+  .neg{color:#ff4757}
+  .signal{font-weight:bold;color:#ffd32a;font-size:.9rem}
+  .hot-row{background:#2a2500 !important;border-left:3px solid #ffd32a}
+  .hot-row td:first-child{color:#ffd32a}
+  .loader{text-align:center;padding:40px;color:#576574;font-size:1rem}
+  .wrap{max-height:calc(100vh - 120px);overflow-y:auto}
+  .wrap::-webkit-scrollbar{width:6px}
+  .wrap::-webkit-scrollbar-track{background:#0a0e17}
+  .wrap::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:3px}
+  @media(max-width:700px){
+    table{font-size:.7rem}
+    td,th{padding:4px 3px}
+    h1{font-size:1.1rem}
+  }
+</style>
+</head>
+<body>
+
+<h1>⚡ MARDUK BOARD</h1>
+<div class="sub">Binance vs DEX (Raydium / Orca) — Gerçek Zamanlı Arbitraj</div>
+
+<div class="stats">
+  <span class="count" id="coinCount">—</span>
+  <span class="hot" id="hotCount">—</span>
+  <span class="time" id="updateTime">—</span>
+</div>
+
+<div class="wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Coin</th>
+      <th>DEX</th>
+      <th>Binance $</th>
+      <th>DEX $</th>
+      <th>Fark $</th>
+      <th>Fark %</th>
+      <th>Likidite</th>
+      <th>Sinyal</th>
+    </tr>
+  </thead>
+  <tbody id="tbody">
+    <tr><td colspan="8" class="loader">Veriler yükleniyor...</td></tr>
+  </tbody>
+</table>
+</div>
+
+<script>
+const TOKEN_MINTS = {
+  SOL:    "So11111111111111111111111111111111111111112",
+  RAY:    "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R",
+  JUP:    "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
+  BONK:   "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
+  WIF:    "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+  RNDR:   "rndrizKT3MK1iimdxRdWabcF7Zg7AR5T4nud4EkHBof",
+  HNT:    "hntyVP6YFm1Hg25TN9WGLqM12b8TQmcknKrdu1oxWux",
+  PYTH:   "HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3",
+  JTO:    "jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL",
+  W:      "85VBFQZC9TZkfaptBWjvUw7YbZjy52A6mjtPGjstQAmQ",
+  ORCA:   "orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE",
+  MEW:    "MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5",
+  POPCAT: "7GCihgDB8fe6LNa32gd7QhkpCKM5VLYqSfNg4LCnDRhW",
+  FIDA:   "EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp",
+  MNDE:   "MNDEFzGvMt87ueuHvVU9VcTqsAP5b3fTGPsHuuPA5ey",
+  MSOL:   "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
+  BOME:   "ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82",
+  GMT:    "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx",
+  TRUMP:  "HaP8r3ksG76PhQLTqR8FYBeNiQpejcFbQmiHbg787Ut9",
+  PENGU:  "2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv",
+  LAYER:  "LAYER4xPpTCb3QL8S3Bh9AvMu5GnEipXEi4MKMZ1yMp",
+  IO:     "BZLbGTNCSFfoth2GYDtwr7e4imWzpR5jqcUuGEwr646K",
+  SAMO:   "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
+};
+
+const symbols = Object.keys(TOKEN_MINTS);
+
+function fmtPrice(v) {
+  if (v >= 1) return v.toLocaleString("en-US", {minimumFractionDigits:4, maximumFractionDigits:4});
+  if (v >= 0.001) return v.toLocaleString("en-US", {minimumFractionDigits:6, maximumFractionDigits:6});
+  return v.toLocaleString("en-US", {minimumFractionDigits:8, maximumFractionDigits:8});
+}
+
+function fmtLiq(v) {
+  if (v >= 1e6) return "$" + (v/1e6).toFixed(1) + "M";
+  if (v >= 1e3) return "$" + (v/1e3).toFixed(0) + "K";
+  return "$" + v.toFixed(0);
+}
+
+async function fetchBinance() {
+  const r = await fetch("https://api.binance.com/api/v3/ticker/price");
+  const data = await r.json();
+  const prices = {};
+  for (const t of data) {
+    if (t.symbol.endsWith("USDT")) {
+      prices[t.symbol.slice(0, -4)] = parseFloat(t.price);
+    }
+  }
+  return prices;
+}
+
+async function fetchDex(mint) {
+  try {
+    const r = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
+    const data = await r.json();
+    const pairs = data.pairs || [];
+    let best = null;
+    for (const p of pairs) {
+      const dex = (p.dexId || "").toLowerCase();
+      if (dex !== "raydium" && dex !== "orca") continue;
+      const quote = (p.quoteToken?.symbol || "").toUpperCase();
+      if (!["USDC","USDT","SOL"].includes(quote)) continue;
+      const liq = parseFloat(p.liquidity?.usd || 0);
+      if (!best || liq > best.liquidity) {
+        best = {
+          price: parseFloat(p.priceUsd || 0),
+          liquidity: liq,
+          dex: dex.charAt(0).toUpperCase() + dex.slice(1),
+          pair: `${p.baseToken?.symbol || "?"}/${quote}`
+        };
+      }
+    }
+    return best;
+  } catch { return null; }
+}
+
+async function update() {
+  try {
+    const binance = await fetchBinance();
+
+    // DexScreener rate limit: fetch sequentially in small batches
+    const dexData = {};
+    const batch = 5;
+    for (let i = 0; i < symbols.length; i += batch) {
+      const chunk = symbols.slice(i, i + batch);
+      const results = await Promise.all(chunk.map(s => fetchDex(TOKEN_MINTS[s])));
+      chunk.forEach((s, idx) => dexData[s] = results[idx]);
+    }
+
+    const rows = [];
+    for (const sym of symbols) {
+      const bp = binance[sym];
+      const dd = dexData[sym];
+      if (!bp || !dd || !dd.price) continue;
+      const diff = dd.price - bp;
+      const pct = (diff / bp) * 100;
+      rows.push({ sym, dex: dd.dex, bp, dp: dd.price, diff, pct, liq: dd.liquidity });
+    }
+
+    rows.sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct));
+
+    const tbody = document.getElementById("tbody");
+    let html = "";
+    let hotCount = 0;
+
+    for (const r of rows) {
+      const hot = Math.abs(r.pct) > 0.15 && r.liq > 50000;
+      if (hot) hotCount++;
+      const pctClass = r.pct > 0 ? "pos" : r.pct < 0 ? "neg" : "";
+      const signal = hot ? (r.pct > 0 ? "🔼 DEX>" : "🔽 CEX>") : "—";
+
+      html += `<tr class="${hot ? "hot-row" : ""}">
+        <td>${r.sym}</td>
+        <td>${r.dex}</td>
+        <td>${fmtPrice(r.bp)}</td>
+        <td>${fmtPrice(r.dp)}</td>
+        <td class="${pctClass}">${r.diff >= 0 ? "+" : ""}${r.diff.toFixed(6)}</td>
+        <td class="${pctClass}">${r.pct >= 0 ? "+" : ""}${r.pct.toFixed(3)}%</td>
+        <td>${fmtLiq(r.liq)}</td>
+        <td class="signal">${hot ? signal : '<span style="color:#576574">—</span>'}</td>
+      </tr>`;
+    }
+
+    tbody.innerHTML = html || '<tr><td colspan="8" class="loader">Eşleşen coin bulunamadı</td></tr>';
+
+    document.getElementById("coinCount").textContent = `${rows.length} coin`;
+    document.getElementById("hotCount").textContent = `${hotCount} fırsat`;
+    document.getElementById("updateTime").textContent = new Date().toLocaleTimeString("tr-TR");
+
+  } catch (e) {
+    console.error("Update error:", e);
+  }
+}
+
+// İlk yükleme ve 3sn döngü
+update();
+setInterval(update, 3000);
+</script>
+</body>
+</html>
