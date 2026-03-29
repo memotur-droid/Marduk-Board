@@ -45,7 +45,7 @@
 <body>
 
 <h1>⚡ MARDUK BOARD</h1>
-<div class="sub">Binance vs DEX (Raydium / Orca) — Gerçek Zamanlı Arbitraj</div>
+<div class="sub">Binance vs DEX (Raydium / Orca) — Arbitraj Tarayıcı</div>
 
 <div class="stats">
   <span class="count" id="coinCount">—</span>
@@ -75,55 +75,6 @@
 </div>
 
 <script>
-// ── Binance'de USDT paritesi olan tüm büyük Solana tokenleri ──
-const TOKEN_MINTS = {
-  SOL:    "So11111111111111111111111111111111111111112",
-  RAY:    "4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R",
-  JUP:    "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN",
-  BONK:   "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263",
-  WIF:    "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
-  HNT:    "hntyVP6YFm1Hg25TN9WGLqM12b8TQmcknKrdu1oxWux",
-  PYTH:   "HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3",
-  JTO:    "jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL",
-  W:      "85VBFQZC9TZkfaptBWjvUw7YbZjy52A6mjtPGjstQAmQ",
-  ORCA:   "orcaEKTdK7LKz57vaAYr9QeNsVEPfiu6QeMU1kektZE",
-  MEW:    "MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5",
-  POPCAT: "7GCihgDB8fe6LNa32gd7QhkpCKM5VLYqSfNg4LCnDRhW",
-  FIDA:   "EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp",
-  MSOL:   "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
-  BOME:   "ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82",
-  GMT:    "7i5KKsX2weiTkry7jA4ZwSuXGhs5eJBEjY8vVxR4pfRx",
-  TRUMP:  "HaP8r3ksG76PhQLTqR8FYBeNiQpejcFbQmiHbg787Ut9",
-  PENGU:  "2zMMhcVQEXDtdE6vsFS7S7D5oUodfJHE8vd1gnBouauv",
-  LAYER:  "LAYER4xPpTCb3QL8S3Bh9AvMu5GnEipXEi4MKMZ1yMp",
-  IO:     "BZLbGTNCSFfoth2GYDtwr7e4imWzpR5jqcUuGEwr646K",
-  RENDER: "rndrizKT3MK1iimdxRdWabcF7Zg7AR5T4nud4EkHBof",
-  SAMO:   "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU",
-  MNDE:   "MNDEFzGvMt87ueuHvVU9VcTqsAP5b3fTGPsHuuPA5ey",
-  MOBILE: "mb1eu7TzEc71KxDpsmsKoucSSuuoGLv1drys1oP2jh6",
-  KMNO:   "KMNo3nJsBXfcpJTVhZcXLW7RmTwTt4GVFE7suUBo9sS",
-  PRCL:   "4LLbsb5ReP3yEtYzmXewyGjcRJMx2MvBfENfsgW9EVcQ",
-  NOS:    "nosXBVoaCTtYdLvKY6Csb4AC8JCdQKKAaWYtx2ZMoo7",
-  DRIFT:  "DriFtupJYLTosbwoN8koMbEYSx54aFAVLddWsbksjwg7",
-  TNSR:   "TNSRxcUxoT9xBG3de7PiJyTDYu7kskLqcpddxnEJAS6",
-  HONEY:  "4vMsoUT2BWatFweudnQM1xedRLfJgJ7hsWhs4xE5STR8",
-  ZEUS:   "ZEUS1aR7aX8DFFJf5QjWj2ftDDdNTroMNGo8YoQm3Gp",
-  WEN:    "WENWENvqqNya429ubCdR81ZmD69brwQaaBYY6p3LCpk",
-  SLERF:  "7BgBvyjrZX1YKz4oh9mjb8ZScatkkwb8DzFx7LoiVkM3",
-  MPLX:   "METAewgxyPbgwsseH8T16a39CQ5VyVxLpEn5pnCfBZS",
-  NYAN:   "NYANpAp9Cr7YarBNrby7Xx4xU6No6JKTBuohNA3yscP",
-  BOBA:   "bobaM3u8QmqZhY1HwAtnGze3bWWRPcBQaQEqwmAf8jP",
-  SC:     "5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm",
-  GRASS:  "Grass7B4RdKfBCjTKgSqnXkqjwiGvQyFbuSCUJr3XXjs",
-  ME:     "MEFNBXixkEbait3xn9x0tMEMBXuKsNETEJsVPEZwJRT",
-  ACT:    "GJAFwWjJ3vnTsrQVabjBVK2TYB1YtRCQXRDfDgUnpump",
-  PNUT:   "2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump",
-  THE:    "4bCrajAPmJbCpWGsHM4eLguVNbpDJbCaHTm8oa8Hpump",
-  AIXBT:  "BFicBFmLHsGfGRQ48mCMGeZfR4SFQHGfMFEEMmnM3vaj",
-};
-
-const symbols = Object.keys(TOKEN_MINTS);
-
 function fmtPrice(v) {
   if (v >= 100) return v.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2});
   if (v >= 1) return v.toLocaleString("en-US", {minimumFractionDigits:4, maximumFractionDigits:4});
@@ -137,84 +88,20 @@ function fmtLiq(v) {
   return "$" + v.toFixed(0);
 }
 
-async function fetchBinance() {
-  const r = await fetch("https://api.binance.com/api/v3/ticker/price");
-  const data = await r.json();
-  const prices = {};
-  for (const t of data) {
-    if (t.symbol.endsWith("USDT")) {
-      prices[t.symbol.slice(0, -4)] = parseFloat(t.price);
-    }
-  }
-  return prices;
+function timeAgo(iso) {
+  const diff = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (diff < 60) return diff + " sn önce";
+  if (diff < 3600) return Math.floor(diff/60) + " dk önce";
+  return Math.floor(diff/3600) + " sa önce";
 }
 
-async function fetchDex(mint) {
-  try {
-    const r = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
-    const data = await r.json();
-    const pairs = data.pairs || [];
-    let best = null;
-    for (const p of pairs) {
-      const dex = (p.dexId || "").toLowerCase();
-      if (dex !== "raydium" && dex !== "orca") continue;
-
-      // SADECE USDC veya USDT koteli havuzlar — SOL koteli havuzlar hatalı USD fiyat veriyor
-      const quote = (p.quoteToken?.symbol || "").toUpperCase();
-      if (quote !== "USDC" && quote !== "USDT") continue;
-
-      const liq = parseFloat(p.liquidity?.usd || 0);
-      // Minimum $5K likidite — düşük likiditeli junk pool'ları filtrele
-      if (liq < 5000) continue;
-
-      const price = parseFloat(p.priceUsd || 0);
-      if (price <= 0) continue;
-
-      if (!best || liq > best.liquidity) {
-        best = { price, liquidity: liq, dex: dex.charAt(0).toUpperCase() + dex.slice(1) };
-      }
-    }
-    return best;
-  } catch { return null; }
-}
-
-let cycle = 0;
-
-async function update() {
-  cycle++;
+async function loadData() {
   const statusEl = document.getElementById("statusText");
-  statusEl.textContent = "Güncelleniyor...";
-  statusEl.style.color = "#ffa502";
-
   try {
-    const binance = await fetchBinance();
-
-    // DexScreener rate limit: 3'lü batch, araya 300ms
-    const dexData = {};
-    const batch = 3;
-    for (let i = 0; i < symbols.length; i += batch) {
-      const chunk = symbols.slice(i, i + batch);
-      const results = await Promise.all(chunk.map(s => fetchDex(TOKEN_MINTS[s])));
-      chunk.forEach((s, idx) => dexData[s] = results[idx]);
-      if (i + batch < symbols.length) await new Promise(r => setTimeout(r, 300));
-    }
-
-    const rows = [];
-    for (const sym of symbols) {
-      const bp = binance[sym];
-      const dd = dexData[sym];
-      if (!bp || !dd || !dd.price) continue;
-      const diff = dd.price - bp;
-      const pct = (diff / bp) * 100;
-
-      // %10'dan büyük fark gerçekçi değil — muhtemelen farklı token, atla
-      if (Math.abs(pct) > 10) continue;
-
-      rows.push({ sym, dex: dd.dex, bp, dp: dd.price, diff, pct, liq: dd.liquidity });
-    }
-
-    // Fark yüzdesine göre sırala (büyükten küçüğe, mutlak)
-    rows.sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct));
+    const r = await fetch("data.json?t=" + Date.now());
+    if (!r.ok) throw new Error("data.json bulunamadı");
+    const data = await r.json();
+    const rows = data.rows;
 
     const tbody = document.getElementById("tbody");
     let html = "";
@@ -238,24 +125,25 @@ async function update() {
       </tr>`;
     }
 
-    tbody.innerHTML = html || '<tr><td colspan="8" class="loader">Eşleşen coin bulunamadı</td></tr>';
+    tbody.innerHTML = html || '<tr><td colspan="8" class="loader">Veri bulunamadı</td></tr>';
 
     document.getElementById("coinCount").textContent = `${rows.length} coin`;
     document.getElementById("hotCount").textContent = `${hotCount} fırsat`;
-    document.getElementById("updateTime").textContent = `#${cycle} — ${new Date().toLocaleTimeString("tr-TR")}`;
-    statusEl.textContent = "Canlı";
+    document.getElementById("updateTime").textContent = timeAgo(data.updated);
+    statusEl.textContent = "Güncel";
     statusEl.style.color = "#2ed573";
-
   } catch (e) {
-    console.error("Update error:", e);
-    statusEl.textContent = "Hata!";
-    statusEl.style.color = "#ff4757";
+    console.error(e);
+    statusEl.textContent = "Veri bekleniyor...";
+    statusEl.style.color = "#ffa502";
+    document.getElementById("tbody").innerHTML =
+      '<tr><td colspan="8" class="loader">data.json henüz oluşturulmadı — Actions ilk çalışmayı bekliyor</td></tr>';
   }
 }
 
-// İlk yükleme ve 5sn döngü (rate limit'e takılmamak için)
-update();
-setInterval(update, 5000);
+// Sayfa açılınca yükle, sonra her 60 sn'de yenile (JSON zaten 5 dk'da güncellenir)
+loadData();
+setInterval(loadData, 60000);
 </script>
 </body>
 </html>
