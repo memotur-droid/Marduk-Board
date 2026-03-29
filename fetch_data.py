@@ -58,7 +58,7 @@ HEADERS = {"User-Agent": "MardukBoard/1.0"}
 
 
 def fetch_binance():
-    r = requests.get("https://api.binance.com/api/v3/ticker/price", headers=HEADERS, timeout=10)
+    r = requests.get("https://api.binance.us/api/v3/ticker/price", headers=HEADERS, timeout=10)
     r.raise_for_status()
     prices = {}
     for t in r.json():
